@@ -17,21 +17,25 @@
   the iteration process.
 -->
 
-**Language/Version**: [e.g., Python 3.11, Swift 5.9, Rust 1.75 or NEEDS CLARIFICATION]  
-**Primary Dependencies**: [e.g., FastAPI, UIKit, LLVM or NEEDS CLARIFICATION]  
-**Storage**: [if applicable, e.g., PostgreSQL, CoreData, files or N/A]  
-**Testing**: [e.g., pytest, XCTest, cargo test or NEEDS CLARIFICATION]  
-**Target Platform**: [e.g., Linux server, iOS 15+, WASM or NEEDS CLARIFICATION]
-**Project Type**: [single/web/mobile - determines source structure]  
-**Performance Goals**: [domain-specific, e.g., 1000 req/s, 10k lines/sec, 60 fps or NEEDS CLARIFICATION]  
-**Constraints**: [domain-specific, e.g., <200ms p95, <100MB memory, offline-capable or NEEDS CLARIFICATION]  
-**Scale/Scope**: [domain-specific, e.g., 10k users, 1M LOC, 50 screens or NEEDS CLARIFICATION]
+**Language/Version**: TypeScript (strict mode) on Bun (latest stable)
+**Primary Dependencies**: @modelcontextprotocol/sdk + [feature-specific or NEEDS CLARIFICATION]
+**Storage**: [if applicable, e.g., SQLite, file-based, in-memory or N/A]
+**Testing**: Bun's built-in test runner
+**Target Platform**: MCP Server (ChatGPT and compatible clients)
+**Project Type**: Monolithic server (single src/ structure)
+**Performance Goals**: [domain-specific, e.g., <50ms tool response, 100 concurrent connections or NEEDS CLARIFICATION]
+**Constraints**: [domain-specific, e.g., MCP protocol compliance, memory limits or NEEDS CLARIFICATION]
+**Scale/Scope**: [domain-specific, e.g., number of tools, request volume or NEEDS CLARIFICATION]
 
 ## Constitution Check
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **MCP Protocol Compliance**: Does this feature align with MCP specification?
+- [ ] **Monolithic Architecture**: Does this fit within single-server architecture?
+- [ ] **Documentation-First**: Are all design docs, schemas, and examples specified?
+- [ ] **Bun Runtime**: Will this use Bun APIs and tooling exclusively?
+- [ ] **Test-Driven**: Are test scenarios defined in spec before implementation?
 
 ## Project Structure
 
