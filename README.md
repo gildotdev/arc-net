@@ -4,14 +4,21 @@ A Model Context Protocol (MCP) server for ChatGPT and compatible AI assistants.
 
 ## Overview
 
-arc-net is an MCP server built on Bun that provides AI assistants with powerful tools and resources through the standardized Model Context Protocol.
+arc-net is an MCP server built on Bun/Node.js that provides AI assistants with powerful tools and resources through the standardized Model Context Protocol. It supports both stdio (local) and HTTP/SSE (web) transports.
 
 ## Architecture
 
 - **Type**: Monolithic MCP Server
-- **Runtime**: Bun (latest stable)
+- **Runtime**: Bun (latest stable) / Node.js 20+
 - **Language**: TypeScript (strict mode)
 - **Protocol**: MCP (Model Context Protocol)
+- **Transports**: stdio (local), HTTP/SSE (web)
+
+## Features
+
+- **Screenshot Analysis**: Extract item names and quantities from ARC Raiders game screenshots using OCR
+- **HTTP/SSE Transport**: Deploy to cloud platforms (Netlify, Cloudflare) for ChatGPT integration
+- **stdio Transport**: Local integration support for desktop applications
 
 ## Development Principles
 
@@ -27,13 +34,36 @@ This project follows strict governance outlined in `.specify/memory/constitution
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) (latest stable version)
+- [Bun](https://bun.sh) (latest stable version) or Node.js 20+
 
 ### Installation
 
 ```bash
 # Install dependencies
-bun install
+npm install
+```
+
+### Running the Server
+
+#### HTTP Server (for web deployment and ChatGPT)
+
+```bash
+# Development mode
+npm run dev
+
+# Production mode
+npm run build
+npm start
+```
+
+The server will start on `http://localhost:3000`:
+- MCP endpoint: `http://localhost:3000/mcp`
+- Health check: `http://localhost:3000/health`
+
+#### stdio Server (for local integration)
+
+```bash
+npm run dev:stdio
 ```
 
 ### Running Tests
@@ -50,17 +80,32 @@ bun test --coverage
 
 ```bash
 # Type checking
-bun run typecheck
+npm run typecheck
 
 # Linting
-bun run lint
+npm run lint
 ```
+
+## Deployment
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on deploying to:
+- Netlify (serverless functions)
+- Cloudflare Workers (coming soon)
+- Self-hosted HTTP server
 
 ## Project Structure
 
 ```
 arc-net/
 ├── src/               # Source code
+│   ├── index.ts       # stdio server (local)
+│   ├── index-http.ts  # HTTP server (web)
+│   ├── tools/         # MCP tool implementations
+│   ├── services/      # Business logic
+│   ├── models/        # Data structures
+│   └── lib/           # Utilities
+├── netlify/           # Netlify deployment
+│   └── functions/     # Serverless functions
 ├── tests/             # Test files
 ├── docs/              # Documentation
 ├── .specify/          # Speckit templates and memory
@@ -70,6 +115,7 @@ arc-net/
 ## Documentation
 
 - [Constitution](.specify/memory/constitution.md) - Project governance and principles
+- [Deployment Guide](./DEPLOYMENT.md) - Cloud deployment instructions
 - [Templates](.specify/templates/) - Specification and planning templates
 
 ## Contributing
