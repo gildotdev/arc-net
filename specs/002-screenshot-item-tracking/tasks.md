@@ -49,13 +49,13 @@ Phase 7: US5 (Enrichment) ← Requires 001-arcraiders-data
 
 **Goal**: Initialize project structure and install dependencies
 
-- [ ] T001 Create project directory structure: `src/{tools,services,models,lib}`, `tests/{unit,integration,fixtures}`, `data/checklists/`
-- [ ] T002 [P] Initialize TypeScript configuration in `tsconfig.json` with strict mode enabled
-- [ ] T003 [P] Create `package.json` with Bun scripts: test, typecheck, lint, dev
-- [ ] T004 [P] Install dependencies: `bun add @modelcontextprotocol/sdk tesseract.js sharp fuzzysort`
-- [ ] T005 [P] Install dev dependencies: `bun add -d @types/node`
-- [ ] T006 [P] Create `.gitignore` including `node_modules/`, `data/checklists/*.json`, `*.log`
-- [ ] T007 [P] Create test fixtures directory and add sample screenshot images to `tests/fixtures/test-screenshots/`
+- [X] T001 Create project directory structure: `src/{tools,services,models,lib}`, `tests/{unit,integration,fixtures}`, `data/checklists/`
+- [X] T002 [P] Initialize TypeScript configuration in `tsconfig.json` with strict mode enabled
+- [X] T003 [P] Create `package.json` with Bun scripts: test, typecheck, lint, dev
+- [X] T004 [P] Install dependencies: `bun add @modelcontextprotocol/sdk tesseract.js sharp fuzzysort`
+- [X] T005 [P] Install dev dependencies: `bun add -d @types/node`
+- [X] T006 [P] Create `.gitignore` including `node_modules/`, `data/checklists/*.json`, `*.log`
+- [X] T007 [P] Create test fixtures directory and add sample screenshot images to `tests/fixtures/test-screenshots/`
 
 ---
 
