@@ -85,15 +85,15 @@ Phase 7: US5 (Enrichment) ← Requires 001-arcraiders-data
 
 ### Tests (Write First - TDD)
 
-- [ ] T014 [P] [US1] Create OCR service unit test in `tests/unit/ocr-service.test.ts` covering text extraction and confidence scoring
-- [ ] T015 [P] [US1] Create item matcher unit test in `tests/unit/item-matcher.test.ts` covering fuzzy matching and scoring
-- [ ] T016 [P] [US1] Create image processor unit test in `tests/unit/image-processor.test.ts` covering preprocessing (grayscale, contrast)
-- [ ] T017 [US1] Create screenshot extraction integration test in `tests/integration/screenshot-extract.test.ts` covering end-to-end flow with fixture images
+- [X] T014 [P] [US1] Create OCR service unit test in `tests/unit/ocr-service.test.ts` covering text extraction and confidence scoring
+- [X] T015 [P] [US1] Create item matcher unit test in `tests/unit/item-matcher.test.ts` covering fuzzy matching and scoring
+- [X] T016 [P] [US1] Create image processor unit test in `tests/unit/image-processor.test.ts` covering preprocessing (grayscale, contrast)
+- [X] T017 [US1] Create screenshot extraction integration test in `tests/integration/screenshot-extract.test.ts` covering end-to-end flow with fixture images
 
 ### Implementation
 
-- [ ] T018 [US1] Implement OCR service in `src/services/ocr-service.ts` using Tesseract.js (English model, PSM mode 6)
-- [ ] T019 [US1] Implement item matcher service in `src/services/item-matcher.ts` using fuzzysort with confidence threshold
+- [X] T018 [US1] Implement OCR service in `src/services/ocr-service.ts` using Tesseract.js (English model, PSM mode 6)
+- [X] T019 [US1] Implement item matcher service in `src/services/item-matcher.ts` using fuzzysort with confidence threshold
 - [ ] T020 [US1] Implement extract_items_from_screenshot MCP tool in `src/tools/screenshot-extract.ts` following contracts/mcp-tools.md
 - [ ] T021 [US1] Add MCP tool registration for extract_items_from_screenshot in server initialization
 - [ ] T022 [US1] Run tests and verify US1 acceptance scenarios pass (all tests green)
