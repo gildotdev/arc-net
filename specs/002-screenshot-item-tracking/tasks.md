@@ -65,15 +65,15 @@ Phase 7: US5 (Enrichment) ← Requires 001-arcraiders-data
 
 ### Models
 
-- [ ] T008 [P] Create ExtractedItem interface in `src/models/extracted-item.ts` per data-model.md
-- [ ] T009 [P] Create ChecklistItem interface in `src/models/checklist-item.ts` per data-model.md
-- [ ] T010 [P] Create Checklist interface in `src/models/checklist.ts` per data-model.md
-- [ ] T011 [P] Create ExtractionResult interface in `src/models/extraction-result.ts` per data-model.md
+- [X] T008 [P] Create ExtractedItem interface in `src/models/extracted-item.ts` per data-model.md
+- [X] T009 [P] Create ChecklistItem interface in `src/models/checklist-item.ts` per data-model.md
+- [X] T010 [P] Create Checklist interface in `src/models/checklist.ts` per data-model.md
+- [X] T011 [P] Create ExtractionResult interface in `src/models/extraction-result.ts` per data-model.md
 
 ### Utility Libraries
 
-- [ ] T012 [P] Create image preprocessing utility in `src/lib/image-processor.ts` (Sharp integration)
-- [ ] T013 [P] Create fuzzy matching utility in `src/lib/fuzzy-match.ts` (fuzzysort integration)
+- [X] T012 [P] Create image preprocessing utility in `src/lib/image-processor.ts` (Sharp integration)
+- [X] T013 [P] Create fuzzy matching utility in `src/lib/fuzzy-match.ts` (fuzzysort integration)
 
 ---
 
