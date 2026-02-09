@@ -55,11 +55,32 @@ class ArcNetHttpServer {
   }
 
   /**
-   * Setup MCP tool handlers
+   * Setup MCP tool handlers on a given server instance
    */
   private setupToolHandlers(): void {
+    this.registerToolHandlers(this.server);
+  }
+
+  /**
+   * Create a new MCP Server instance for an individual session.
+   * Each session needs its own Server because MCP only allows one transport per Server.
+   */
+  private createSessionServer(): Server {
+    const sessionServer = new Server(
+      { name: 'arc-net', version: '0.1.0' },
+      { capabilities: { tools: {} } }
+    );
+    this.registerToolHandlers(sessionServer);
+    sessionServer.onerror = (error) => console.error('[MCP Session Error]', error);
+    return sessionServer;
+  }
+
+  /**
+   * Register tool handlers on a server instance
+   */
+  private registerToolHandlers(server: Server): void {
     // List available tools
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
+    server.setRequestHandler(ListToolsRequestSchema, async () => {
       const tools: Tool[] = [
         {
           name: 'extract_items_from_screenshot',
@@ -86,7 +107,7 @@ class ArcNetHttpServer {
     });
 
     // Handle tool calls
-    this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const { name, arguments: args } = request.params;
 
       try {
@@ -156,14 +177,20 @@ class ArcNetHttpServer {
       console.log(`Received ${req.method} request to /mcp`);
       
       try {
-        // Get or create transport for this session
+        // Get existing transport for returning sessions, or create new one
         const sessionId = req.headers['mcp-session-id'] as string | undefined;
         let transport: StreamableHTTPServerTransport;
 
         if (sessionId && this.transports.has(sessionId)) {
           transport = this.transports.get(sessionId)!;
+        } else if (sessionId && !this.transports.has(sessionId)) {
+          // Session ID provided but not found — client is stale
+          res.status(400).json({ error: 'Invalid or expired session' });
+          return;
         } else {
-          // Create new transport for new session
+          // New session: create a fresh Server + Transport pair
+          const sessionServer = this.createSessionServer();
+
           transport = new StreamableHTTPServerTransport({
             sessionIdGenerator: () => Math.random().toString(36).substring(7),
             onsessioninitialized: (newSessionId) => {
@@ -172,8 +199,7 @@ class ArcNetHttpServer {
             },
           });
 
-          // Connect transport to server
-          await this.server.connect(transport);
+          await sessionServer.connect(transport);
 
           // Cleanup when transport closes
           transport.onclose = () => {

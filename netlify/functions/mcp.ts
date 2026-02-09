@@ -8,100 +8,99 @@ import {
 } from '@modelcontextprotocol/sdk/types.js';
 import { ScreenshotExtractTool } from '../../src/tools/screenshot-extract.js';
 import { IncomingMessage, ServerResponse } from 'http';
-import { Readable } from 'stream';
 
-// Initialize MCP server (reused across invocations)
-let mcpServer: Server | null = null;
-let screenshotTool: ScreenshotExtractTool | null = null;
+// Reuse the tool instance across invocations (stateless, safe to share)
+const screenshotTool = new ScreenshotExtractTool();
 
-function getServer(): Server {
-  if (!mcpServer) {
-    mcpServer = new Server(
-      {
-        name: 'arc-net',
-        version: '0.1.0',
+/**
+ * Create a fresh MCP Server per request.
+ * Serverless functions are stateless — the MCP Server only allows one
+ * transport at a time, so we cannot reuse a singleton across invocations.
+ */
+function createServer(): Server {
+  const server = new Server(
+    {
+      name: 'arc-net',
+      version: '0.1.0',
+    },
+    {
+      capabilities: {
+        tools: {},
       },
+    }
+  );
+
+  // Setup tool handlers
+  server.setRequestHandler(ListToolsRequestSchema, async () => {
+    const tools: Tool[] = [
       {
-        capabilities: {
-          tools: {},
-        },
-      }
-    );
-
-    screenshotTool = new ScreenshotExtractTool();
-
-    // Setup tool handlers
-    mcpServer.setRequestHandler(ListToolsRequestSchema, async () => {
-      const tools: Tool[] = [
-        {
-          name: 'extract_items_from_screenshot',
-          description: 'Extract item names and quantities from an ARC Raiders game screenshot showing upgrade requirements or mission objectives. Returns structured list of identified items with confidence scores.',
-          inputSchema: {
-            type: 'object',
-            properties: {
-              image: {
-                type: 'string',
-                description: 'Base64-encoded screenshot image (PNG, JPEG supported)',
-              },
-              enhanceOCR: {
-                type: 'boolean',
-                description: 'Apply image preprocessing to improve OCR accuracy (default: true)',
-                default: true,
-              },
+        name: 'extract_items_from_screenshot',
+        description: 'Extract item names and quantities from an ARC Raiders game screenshot showing upgrade requirements or mission objectives. Returns structured list of identified items with confidence scores.',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            image: {
+              type: 'string',
+              description: 'Base64-encoded screenshot image (PNG, JPEG supported)',
             },
-            required: ['image'],
+            enhanceOCR: {
+              type: 'boolean',
+              description: 'Apply image preprocessing to improve OCR accuracy (default: true)',
+              default: true,
+            },
           },
+          required: ['image'],
         },
-      ];
+      },
+    ];
 
-      return { tools };
-    });
+    return { tools };
+  });
 
-    mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
-      const { name, arguments: args } = request.params;
+  server.setRequestHandler(CallToolRequestSchema, async (request) => {
+    const { name, arguments: args } = request.params;
 
-      try {
-        if (name === 'extract_items_from_screenshot' && screenshotTool) {
-          const result = await screenshotTool.execute(args as any);
+    try {
+      if (name === 'extract_items_from_screenshot') {
+        const result = await screenshotTool.execute(args as any);
 
-          return {
-            content: [
-              {
-                type: 'text',
-                text: JSON.stringify({
-                  success: result.errors.length === 0,
-                  data: {
-                    extractedItems: result.extractedItems,
-                    processingTimeMs: result.processingTimeMs,
-                    ocrConfidenceAverage: result.ocrConfidenceAverage,
-                  },
-                  warnings: result.warnings,
-                  error: result.errors.length > 0 ? result.errors[0] : undefined,
-                }, null, 2),
-              },
-            ],
-          };
-        }
-
-        throw new Error(`Unknown tool: ${name}`);
-      } catch (error) {
         return {
           content: [
             {
               type: 'text',
               text: JSON.stringify({
-                success: false,
-                error: error instanceof Error ? error.message : 'Unknown error',
+                success: result.errors.length === 0,
+                data: {
+                  extractedItems: result.extractedItems,
+                  processingTimeMs: result.processingTimeMs,
+                  ocrConfidenceAverage: result.ocrConfidenceAverage,
+                },
+                warnings: result.warnings,
+                error: result.errors.length > 0 ? result.errors[0] : undefined,
               }, null, 2),
             },
           ],
-          isError: true,
         };
       }
-    });
-  }
 
-  return mcpServer;
+      throw new Error(`Unknown tool: ${name}`);
+    } catch (error) {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: JSON.stringify({
+              success: false,
+              error: error instanceof Error ? error.message : 'Unknown error',
+            }, null, 2),
+          },
+        ],
+        isError: true,
+      };
+    }
+  });
+
+  return server;
 }
 
 export const handler: Handler = async (event: HandlerEvent, context: HandlerContext) => {
@@ -123,14 +122,14 @@ export const handler: Handler = async (event: HandlerEvent, context: HandlerCont
   }
 
   try {
-    const server = getServer();
+    const server = createServer();
 
-    // Create transport for this request
+    // Create a fresh transport per request (serverless = stateless)
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: () => Math.random().toString(36).substring(7),
     });
 
-    // Connect transport to server
+    // Connect transport to fresh server instance
     await server.connect(transport);
 
     // Create mock IncomingMessage and ServerResponse for the transport
